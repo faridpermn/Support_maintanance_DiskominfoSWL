@@ -1,0 +1,44 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+<h1>History yang Dihapus</h1>
+
+<a href="../" style="background:blue;color:white;padding:6px 12px;border-radius:5px;text-decoration:none;">
+    Kembali ke Dashboard
+</a>
+
+<br><br>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Tanggal</th>
+        <th>Jenis</th>
+        <th>Status</th>
+        <th>Isi</th>
+        <th>Aksi</th>
+    </tr>
+
+    {% for item in deleted_items %}
+    <tr>
+        <td>{{ item.tanggal }}</td>
+        <td>{{ item.jenis }}</td>
+        <td>{{ item.status }}</td>
+        <td>{{ item.isi|truncatechars:50 }}</td>
+        <td>
+            <a href="../restore/{{ item.id }}/"
+               style="background:green;color:white;padding:4px 8px;border-radius:4px;text-decoration:none;">
+               Pulihkan
+            </a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="5" style="text-align:center;">
+            Tidak ada history yang dihapus
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

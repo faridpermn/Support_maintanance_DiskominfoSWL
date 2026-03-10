@@ -1,0 +1,316 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+
+{{ block.super }}
+
+<style>
+
+.dashboard-cards{
+    display:flex;
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.card{
+    flex:1;
+    background:#f8f9fa;
+    padding:15px;
+    border-radius:8px;
+    text-align:center;
+    box-shadow:0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card h3{
+    margin:0;
+    font-size:22px;
+}
+
+.card p{
+    margin:5px 0 0 0;
+    color:#777;
+}
+
+/* container layout */
+.bottom-layout{
+    display:flex;
+    gap:70px; /* jarak tabel dan grafik lebih jauh */
+    align-items:flex-start;
+    padding-right:60px; /* dorong grafik lebih ke kanan */
+}
+
+/* kiri tabel */
+.left-panel{
+    flex:1;
+    min-width:600px;
+}
+
+/* kanan grafik */
+.right-panel{
+    width:460px;
+}
+
+/* box grafik */
+.chart-box{
+    background:#fff;
+    padding:20px;
+    border-radius:8px;
+    margin-bottom:25px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.08);
+}
+
+.status-selesai{
+    color:green;
+    font-weight:bold;
+}
+
+.status-proses{
+    color:orange;
+    font-weight:bold;
+}
+
+.status-baru{
+    color:red;
+    font-weight:bold;
+}
+
+.table-wrapper{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+thead{
+    background:#f2f2f2;
+}
+
+tbody tr:hover{
+    background:#fafafa;
+}
+
+</style>
+
+
+<!-- ===================== -->
+<!-- STATISTIK -->
+<!-- ===================== -->
+
+<div class="dashboard-cards">
+
+<div class="card">
+<h3>{{ keluhan_day|length }}</h3>
+<p>Data Hari Terpantau</p>
+</div>
+
+<div class="card">
+<h3>{{ recent_laporan|length }}</h3>
+<p>Laporan Terbaru</p>
+</div>
+
+<div class="card">
+<h3>{{ selesai_total|length }}</h3>
+<p>Data Penyelesaian</p>
+</div>
+
+</div>
+
+<hr>
+
+
+<!-- ===================== -->
+<!-- LAYOUT BAWAH -->
+<!-- ===================== -->
+
+<div class="bottom-layout">
+
+
+<!-- ===================== -->
+<!-- KIRI : RECENT KELUHAN -->
+<!-- ===================== -->
+
+<div class="left-panel">
+
+<h2>Recent Keluhan & Feedback</h2>
+
+<div style="margin-bottom:15px;">
+
+<a href="clear-recent/" 
+style="background:#d9534f;color:white;padding:8px 14px;border-radius:5px;text-decoration:none;margin-right:10px;">
+Bersihkan History
+</a>
+
+<a href="restore-recent/" 
+style="background:#5cb85c;color:white;padding:8px 14px;border-radius:5px;text-decoration:none;margin-right:10px;">
+Pulihkan History
+</a>
+
+<a href="/laporan-pdf/" 
+style="background:#0275d8;color:white;padding:8px 14px;border-radius:5px;text-decoration:none;">
+Export PDF
+</a>
+
+</div>
+
+
+<div class="table-wrapper">
+
+<table border="1" cellpadding="8">
+
+<thead>
+<tr>
+<th>Tanggal</th>
+<th>Nama</th>
+<th>Bidang</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for item in recent_laporan %}
+
+<tr>
+
+<td>{{ item.tanggal|date:"d M Y H:i" }}</td>
+<td>{{ item.nama_pengirim|default:"-" }}</td>
+<td>{{ item.bidang|default:"-" }}</td>
+
+<td>
+
+{% if item.status == "Selesai" %}
+<span class="status-selesai">{{ item.status }}</span>
+
+{% elif item.status == "Diproses" %}
+<span class="status-proses">{{ item.status }}</span>
+
+{% else %}
+<span class="status-baru">{{ item.status }}</span>
+{% endif %}
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="4" style="text-align:center;">
+Tidak ada laporan terbaru.
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<!-- ===================== -->
+<!-- KANAN : GRAFIK -->
+<!-- ===================== -->
+
+<div class="right-panel">
+
+<div class="chart-box">
+<h2>Laporan Masuk (7 Hari Terakhir)</h2>
+<canvas id="dailyChart"></canvas>
+</div>
+
+<div class="chart-box">
+<h2>Keluhan Selesai (7 Hari Terakhir)</h2>
+<canvas id="selesaiChart"></canvas>
+</div>
+
+</div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+
+const dayLabels = JSON.parse('{{ day_labels|escapejs }}');
+const keluhanDay = JSON.parse('{{ keluhan_day|escapejs }}');
+const feedbackDay = JSON.parse('{{ feedback_day|escapejs }}');
+
+const selesaiLabels = JSON.parse('{{ selesai_labels|escapejs }}');
+const selesaiTotal = JSON.parse('{{ selesai_total|escapejs }}');
+
+
+// grafik laporan
+new Chart(document.getElementById('dailyChart'), {
+
+type: 'bar',
+
+data: {
+labels: dayLabels,
+datasets: [
+
+{
+label: 'Keluhan',
+data: keluhanDay,
+backgroundColor: '#d9534f'
+},
+
+{
+label: 'Feedback',
+data: feedbackDay,
+backgroundColor: '#5bc0de'
+}
+
+]
+
+},
+
+options:{
+responsive:true,
+scales:{y:{beginAtZero:true}}
+}
+
+});
+
+
+// grafik selesai
+new Chart(document.getElementById('selesaiChart'), {
+
+type: 'line',
+
+data:{
+labels: selesaiLabels,
+datasets:[
+
+{
+label:'Keluhan Selesai',
+data: selesaiTotal,
+borderColor:'#5cb85c',
+fill:false,
+tension:0.3
+}
+
+]
+
+},
+
+options:{
+responsive:true,
+scales:{y:{beginAtZero:true}}
+}
+
+});
+
+});
+
+</script>
+
+{% endblock %}

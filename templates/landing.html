@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Layanan Digital Kominfo Sawahlunto</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: white;
+            background: url("{% static 'images/bg-tech.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .overlay {
+            background: rgba(5, 5, 240, 0.75);
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar a {
+            color: white;
+            text-decoration: none;
+            background: #007BFF;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        .top-bar a:hover {
+            background: #0056b3;
+        }
+
+        .content {
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        .content img {
+            width: 250px;
+            margin-bottom: 20px;
+        }
+
+        .content h1 {
+            font-size: 36px;
+        }
+
+        .content p {
+            font-size: 18px;
+        }
+
+        .btn {
+            margin-top: 30px;
+            padding: 12px 25px;
+            background: #00c3ff;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #0099cc;
+        }
+    </style>
+</head>
+<body>
+
+<div class="overlay">
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <!-- KIRI ATAS → LINK TELEGRAM BOT -->
+        <a href="https://t.me/KomiSwl_bot" target="_blank" class="btn-bot">
+            Hubungi Bot Telegram
+        </a>
+
+        <!-- KANAN ATAS → LOGIN ADMIN -->
+        <a href="/admin">
+            Login Admin
+        </a>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+        <!-- LOGO KOMINFO -->
+        <img src="{% static 'images/logo-kominfo.png' %}" alt="Logo Kominfo">
+
+        <h1>Layanan Digital Kominfo Sawahlunto</h1>
+        <p>
+            Akses cepat keluhan dan feedback.
+        </p>
+
+        <!-- AKSES LAYANAN -->
+        <a href="/tutorial/" class="btn">
+            Akses Layanan
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>
